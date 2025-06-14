@@ -1,0 +1,29 @@
+calcium:
+  tau: 100
+  spikes_path: "data/spikes.zarr"
+  save_output: true  # Set to false to delete output after logging
+
+preprocessing:
+  sg_win: 31
+  win_len: 5
+  input_path: "data/calcium_output.zarr"   # This will be overwritten automatically when running pipeline
+  spikes_path: "data/spikes.zarr"
+  save_output: true
+
+inference:
+  lag: 10
+  input_path: "data/preprocessed_output.zarr"  # This will be overwritten automatically when running pipeline
+  conn_matrix: "data/conn_matrix.npy"
+  save_output: true
+
+mlflow:
+  tracking_uri: "./mlruns"
+  experiment_name: "NeuralPipeline"
+
+resources:
+  cluster:
+    queue: "dev_single"
+    cores: 1
+    memory: "8GB"
+    walltime: "00:30:00"
+    jobs: 20
