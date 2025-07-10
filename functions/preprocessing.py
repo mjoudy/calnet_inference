@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal as sig
 from functions import utils
+from mlflow_tracking import init_mlflow, log_step_metrics
 
 def apply_sav_gol(signal_row, sg_win):
     smooth_cal = sig.savgol_filter(signal_row, window_length=sg_win, deriv=0, delta=1, polyorder=3)
@@ -41,6 +42,7 @@ def dask_preprocess(signal, spikes, sg_win=31, win_len=5):
         b_fits[row] = perform_polyfit(smooth_cal, smooth_deriv, mask)
         feed[row, :] = calculate_feed(smooth_cal, smooth_deriv, b_fits[row])
 
+    log_step_metrics('dask_preprocess', {'signal_shape': signal.shape, 'spikes_shape': spikes.shape, 'sg_win': sg_win, 'win_len': win_len})
     return feed
 
 def dask_estimate_kernels(signal, spikes, sg_win=31, win_len=5):

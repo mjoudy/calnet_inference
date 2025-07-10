@@ -1,4 +1,14 @@
 import numpy as np
+from mlflow_tracking import init_mlflow, log_step_metrics
+
+def simulate_data(*args, **kwargs):
+    init_mlflow()
+    # For demonstration, simulate random data
+    np.random.seed(42)
+    X = np.random.randn(100, 10)
+    y = np.random.randn(100)
+    log_step_metrics('simulate_data', {'X_shape': X.shape, 'y_shape': y.shape})
+    return X, y
 
 def sim_calcium(spikes, tau=100):
     N, total_dur = spikes.shape
@@ -19,5 +29,5 @@ def sim_calcium(spikes, tau=100):
 
     noise_recording = np.random.normal(0, 1, calcium_nsp_noisy.shape)
     calcium_nsp_noisy += noise_recording
-
+    log_step_metrics('sim_calcium', {'N': N, 'sim_dur': sim_dur, 'tau': tau})
     return calcium_nsp_noisy

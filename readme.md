@@ -15,22 +15,19 @@ It is optimized for large datasets using Dask and runs on SLURM-based HPC cluste
 │   └── config.yaml            # All pipeline parameters & paths
 │
 ├── functions/
+│   ├── __init__.py           # Package initialization
 │   ├── simulation.py         # Step 1: Calcium simulation logic
 │   ├── preprocessing.py      # Step 2: Feed signal estimation
 │   ├── inference.py          # Step 3: Connection inference
-│   ├── utils.py              # Shared tools: file naming, config hash
+│   ├── util.py              # Shared tools: file naming, config hash
 │   └── slurm_dask.py         # Dask cluster setup for SLURM
 │
-├── pipeline/
-│   ├── step1_calcium.py      # SLURM-ready script for calcium simulation
-│   ├── step2_preprocessing.py# SLURM-ready script for preprocessing
-│   └── step3_inference.py    # SLURM-ready script for inference
+├── logs/                     # Logs written by SLURM
 │
 ├── run_pipeline.py           # Main entry point for chaining all steps
 ├── mlflow_tracking.py        # Centralized MLflow logging logic
 ├── job.slurm                 # Example SLURM job submission file
 ├── environment.yml           # Conda environment definition
-├── logs/                     # Logs written by SLURM
 │
 ├── tests/
 │   ├── dry_run_setup.py      # Creates dummy spike & conn_matrix data
@@ -38,6 +35,40 @@ It is optimized for large datasets using Dask and runs on SLURM-based HPC cluste
 │   └── test_pipeline.ipynb   # Notebook interface for testing & visualization
 │
 └── README.md
+```
+
+---
+
+## 🔧 Configuration
+
+The `config/config.yaml` file should contain the following structure:
+
+```yaml
+# MLflow configuration
+mlflow:
+  tracking_uri: "./mlruns"  # Local path or remote URI
+  experiment_name: "Default"
+
+# Pipeline parameters
+pipeline:
+  save_output: true  # Whether to save intermediate outputs
+  cleanup: false     # Whether to delete intermediate files
+
+# Step-specific parameters
+calcium:
+  # Parameters for calcium simulation
+  tau: 0.5
+  dt: 0.01
+
+preprocessing:
+  # Parameters for signal preprocessing
+  window_size: 100
+  threshold: 0.1
+
+inference:
+  # Parameters for connectivity inference
+  method: "correlation"
+  threshold: 0.05
 ```
 
 ---
@@ -64,7 +95,7 @@ Each step:
 ### 1. Set up your environment
 ```bash
 conda env create -f environment.yml
-conda activate neural-pipeline
+conda activate calnet
 ```
 
 ### 2. Generate test data
@@ -95,6 +126,8 @@ mlflow ui --port 5000
 - Optional output cleanup
 - Reproducible experiment tracking via MLflow
 - Lightweight versioning built-in
+- Comprehensive error handling
+- Automatic log directory creation
 
 ---
 
